@@ -25,7 +25,6 @@ def getMap(artistName, n):
 	lines = lyrics.split('\n')
 	numLines +=  len(lines)
 	for line in lines:
-		line += '\n'
 		#line = unidecode.unidecode(line)
 		words = line.split()
 		if len(words) == 0: continue
@@ -33,7 +32,7 @@ def getMap(artistName, n):
 			prevWords = [None for x in range(0, n)]
 			for j in range(1, n+1):
 				if i-j >= 0:
-					prevWords[j-1] = words[j-1]
+					prevWords[-j] = words[i-j]
 			totalSyllables += nsyl(words[i])[0]
 			ngram = tuple(prevWords)
 			if ngram in ngramMap:
@@ -56,9 +55,8 @@ def getMap(artistName, n):
 	return ngramMap, rhymeMap, avgSyllables
 
 
-n = 3
+n = 2
 ngrams, rhyme, avgSyllables = getMap("Kendrick Lamar", n)
-print ngrams
 # genRap(ngrams, rhyme, reverseNgramMap)
 mdp = rapMDP.RapMDP(rhyme, ngrams, avgSyllables, n)
 alg = util.ValueIteration()

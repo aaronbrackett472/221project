@@ -67,6 +67,8 @@ class RapMDP(util.MDP):
         if state[0] >= 16:
             return edges
         if action == "Keep Going":
+            if state[1] not in self.wordMap:
+                return edges
             possWords = set(self.wordMap[state[1]])
             numPossWords = float(len(self.wordMap[state[1]]))
             for word in possWords:
@@ -75,6 +77,8 @@ class RapMDP(util.MDP):
                 edges.append((newState, self.wordMap[state[1]].count(word)/numPossWords, 0))
         elif action == "Finish Line":
             if state[2] != None:
+                if state[2] not in self.rhymeMap:
+                    return edges
                 nextWords = set(self.wordMap[state[1]])
                 rhymes = set(self.rhymeMap[state[2]])
                 possWords = nextWords.intersection(rhymes)
