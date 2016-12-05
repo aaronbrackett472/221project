@@ -3,7 +3,9 @@ import nltk, util
 d = cmudict.dict()
 
 def nsyl(word):
-  return [len(list(y for y in x if y[-1].isdigit())) for x in d[word.lower()]] 
+    if word not in d:
+        return [0]
+    return [len(list(y for y in x if y[-1].isdigit())) for x in d[word.lower()]] 
 
 def rhyme(inp, level):
      entries = nltk.corpus.cmudict.entries()
@@ -41,13 +43,15 @@ class RapMDP(util.MDP):
         #previous words
         #last word of previous line
         #lyrics
-        return (0, [None for x in range(0,self.n)], None, "")  # total, next card (if any), multiplicity for each card
+        #print "here", (0, [None for x in range(0,self.n)], None, "")
+        noneTuple = tuple([None for x in range(0,self.n)])
+        return (0, noneTuple, None, "")  # total, next card (if any), multiplicity for each card
 
     # Return set of actions possible from |state|.
     # You do not need to modify this function.
     # All logic for dealing with end states should be done in succAndProbReward
     def actions(self, state):
-        ["Keep Going", "Finish Line"]
+        return ["Keep Going", "Finish Line"]
 
 
 
@@ -66,38 +70,46 @@ class RapMDP(util.MDP):
             possWords = set(self.wordMap[state[1]])
             numPossWords = float(len(self.wordMap[state[1]]))
             for word in possWords:
-                syllables = nsyl(word)
-                newState = (state[0], shiftWords(state[1], word), state[2], lyrics+word)
-                edges.append(newState, self.wordMap[state[1]].count(word)/numPossWords, 0)
+                syllables = nsyl(word)[0]
+                newState = (state[0], self.shiftWords(state[1], word), state[2], state[3]+word)
+                edges.append((newState, self.wordMap[state[1]].count(word)/numPossWords, 0))
         elif action == "Finish Line":
-            nextWords = set(self.wordMap[state[1]])
-            rhymes = set(self.rhymeMap[state[2]])
-            possWords = nextWords.intersection(rhymes)
-            numPossWords = 0
+            if state[2] != None:
+                nextWords = set(self.wordMap[state[1]])
+                rhymes = set(self.rhymeMap[state[2]])
+                possWords = nextWords.intersection(rhymes)
+                numPossWords = 0
+                for word in possWords:
+                    numPossWords += self.wordMap[state[1]].count(word)
+                    numPossWords += self.rhymeMap[state[2]].count(word)
+            else:
+                possWords = set(self.wordMap[state[1]])
+                numPossWords = len(self.wordMap[state[1]])
             for word in possWords:
-                numPossWords += self.wordMap[state[1]].count(word)
-                numPossWords += self.rhymeMap[state[2]].count(word)
-            for word in possWords:
-                newState = (state[0]+1, shiftWords(state[1], word), word, state[4]+word+'\n')
-                wordCount = self.wordMap[state[1]].count(word) + self.rhymeMap[state[2]].count(word)  
+                newState = (state[0]+1, self.shiftWords(state[1], word), word, state[3]+word+'\n')
+                if state[2] != None:
+                    wordCount = self.wordMap[state[1]].count(word) + self.rhymeMap[state[2]].count(word)  
+                else:
+                    wordCount = self.wordMap[state[1]].count(word) 
                 if state[0] == 15:
                     score = self.reward(state[3], self.idealSyllCount)
-                    edges.append(newState, float(wordCount)/numPossWords, score)
+                    edges.append((newState, float(wordCount)/numPossWords, score))
                 else:
-                    edges.append(newState, float(wordCount)/numPossWords, 0)
+                    edges.append((newState, float(wordCount)/numPossWords, 0))
+        return edges
         # END_YOUR_CODE
 
-    def shiftWords(words, newWord):
+    def shiftWords(self, words, newWord):
         newWords = []
         for i in range(1, len(words)):
             newWords.append(words[i])
         newWords.append(newWord)
-        return newWords
+        return tuple(newWords)
 
     def discount(self):
         return 1
 
-    def reward(lyrics, idealSyllCount):
+    def reward(self, lyrics, idealSyllCount):
         reward = 0
         prevWord = None
         for line in lyrics:
