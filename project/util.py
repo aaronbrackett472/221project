@@ -182,4 +182,6 @@ def simulate(mdp, rl, numTrials=10, maxIterations=1000, verbose=False,
         if verbose:
             print "Trial %d (totalReward = %s): %s" % (trial, totalReward, sequence)
         totalRewards.append(totalReward)
+        print action
+        print state
     return totalRewards
