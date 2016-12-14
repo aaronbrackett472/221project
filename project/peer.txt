@@ -1,0 +1,17 @@
+Anomaly Detection in IoT Networks
+Luke Chen, Jake Smola, Zeyad Ahmed Deeb
+
+Their project was to make a binary classifier on the packets being received to be able to determine whether or not it is malicious. What I really liked about their poster were the diagrams explaining some of the more technical details of the project. 
+
+DominAI: A Dominoes-Playing AI
+Guillermo Andres Angeris, Lucy Li
+
+Their project was to make a Dominoes Player that could function despite the fact that the player has to deal with imperfect information. What I liked about their poster was that they put pseudocode on their poster, so that you can clearly see what their algorithm is doing as to have a better idea. 
+
+Determining Betting Spreads and an Optimal Betting Strategy for NBA Games Pre-Tipoff
+Sai Vignesh Saravana Senthilkumar, Chase Brandon, Micah Daniel Silberstein
+
+Their project was to be able to predict Basketball games well enough to “beat Vegas”. What I really liked was that they could take their project and use it for real world purposes if they were to actually use it to bet. 
+
+
+

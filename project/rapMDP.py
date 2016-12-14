@@ -95,7 +95,7 @@ class RapMDP(util.MDP):
                     wordCount = self.wordMap[state[1]].count(word) + self.rhymeMap[state[2]].count(word)  
                 else:
                     wordCount = self.wordMap[state[1]].count(word) 
-                if state[0] == 15:
+                if state[0] == 1:
                     score = self.reward(state[3], self.idealSyllCount)
                     edges.append((newState, float(wordCount)/numPossWords, score))
                 else:
